@@ -10,6 +10,7 @@ The main file.
 """
 
 
+import time
 import tkinter
 import colorsLog as clg     #colorsLog is a module available on https://github.com/LopsemPyier/colorsLog. You need install the colors module after. He is available on https://github.com/LopsemPyier/colors.
 
@@ -53,7 +54,7 @@ class Display():     #Class to display the widgets.
 		self.expEnt = tkinter.Entry(self.expLab, textvariable = self.exp, width = 30)
 		self.go = tkinter.Button(self.bottun, text = "Calculate", command = self.calcul)
 		self.res = tkinter.Button(self.bottun, text = "Reset", command = self.reset)
-		self.resultLab = tkinter.Label(self.resultFra, text = "a power b = ")
+		self.resultLab = tkinter.Label(self.resultFra, text = "a ^ b = ")
 		self.resul = tkinter.StringVar()
 		self.result = tkinter.Entry(self.resultFra, textvariable = self.resul)
 		self.quitt = tkinter.Button(self.window, text = "Quit", command = self.window.quit)
@@ -78,32 +79,48 @@ class Display():     #Class to display the widgets.
 		self.resul.set("c")
 
 	def calcul(self):     #Calculate function.
+		with open(filePath, "a") as f:
+			f.write("[{}] : Begining of calculation;\n".format(time.strftime("%A %d %B %Y at %H:%M:%S")))
+		with open(filePath, "a") as f:
+			f.write("[{}] : Calculation of '{}' ^ '{}';\n".format(time.strftime("%A %d %B %Y at %H:%M:%S"), self.num.get(), self.exp.get()))
 		#===== Check of number's validity =====
 		try :
 			self.resu = power(float(self.num.get()), int(self.exp.get()))
 		except ValueError :
+			with open(filePath, "a") as f:
+				f.write("[{}] : ValueError;\n".format(time.strftime("%A %d %B %Y at %H:%M:%S")))
 			try :
 				float(self.num.get())
 			except ValueError :
 				self.errorNum.pack(side = "left")     #Display error message
+				with open(filePath, "a") as f:
+					f.write("[{}] : The number is not a number;\n".format(time.strftime("%A %d %B %Y at %H:%M:%S")))
 			else :
 				self.errorNum.pack_forget()
 			try :
 				int(self.exp.get())
 			except ValueError :
 				self.errorExp.pack(side = "left")     #Display error message
+				with open(filePath, "a") as f:
+					f.write("[{}] : The power is not a integer number;\n".format(time.strftime("%A %d %B %Y at %H:%M:%S")))
 			else :
 				self.errorExp.pack_forget()
 		else :
 			self.errorNum.pack_forget()
 			self.errorExp.pack_forget()
-			self.resultLab["text"] = "{} power {} = ".format(self.num.get(), self.exp.get())     #Update the text
+			self.resultLab["text"] = "{} ^ {} = ".format(self.num.get(), self.exp.get())     #Update the text
 			self.resul.set(str(self.resu))     #Display the resultat
 			self.result["width"] = len(str(self.resu)) + 1
+			with open(filePath, "a") as f:
+				f.write("[{}] : The resultat is {};\n".format(time.strftime("%A %d %B %Y at %H:%M:%S"), self.resu))
 			clg.debug(self.resu)
+		with open(filePath, "a") as f:
+			f.write("[{}] : End of calculation;\n".format(time.strftime("%A %d %B %Y at %H:%M:%S")))
 
 	def reset(self):     #Reset function. Put the default value on Widgets.
-		self.resultLab["text"] = "a power b = "
+		with open(filePath, "a") as f:
+			f.write("[{}] : Reset Widgets;\n".format(time.strftime("%A %d %B %Y at %H:%M:%S")))
+		self.resultLab["text"] = "a ^ b = "
 		self.num.set("")
 		self.exp.set("")
 		self.resul.set("c")
@@ -112,7 +129,13 @@ class Display():     #Class to display the widgets.
 		self.errorExp.pack_forget()
 
 #clg.debugLevel()
+timestate = time.time()
+filePath = "logs/{}.log".format(time.strftime("%Y%d%B_%H-%M-%S"), timestate)
+with open(filePath, "a") as f:
+	f.write("==================================================\nLog file.\n Date time : {}\n".format(time.strftime("%A %d %B %Y at %H:%M:%S"), timestate))
 tk = tkinter.Tk()
 dicplay = Display(tk)
 tk.title("Power calculator")
 tk.mainloop()
+with open(filePath, "a") as f:
+	f.write("[{time}] : Power off;\n==================================================\n".format(time = time.strftime("%A %d %B %Y at %H:%M:%S")))
