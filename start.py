@@ -1,4 +1,4 @@
-#! /usr/bin/env/ python3
+#! /usr/bin/env python3
 # coding: utf-8
 
 
@@ -13,7 +13,9 @@ File to initialize the project.
 import os
 
 settings = {
-    "currentLanguage" : "english"
+    "currentLanguage" : "english",
+    "languages" : ["english", "francais"],
+    "logs" : True
 }
 
 languages = {
@@ -55,7 +57,7 @@ try:
 except FileExistsError :
     pass
 
-with open("settings", "w") as f:
+with open("settings.cnf", "w") as f:
     f.write("{}".format(settings))
 
 for language, value in languages.items():
